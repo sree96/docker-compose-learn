@@ -1,0 +1,42 @@
+version: "3.1"
+
+volumes: 
+  postgresVolume:
+
+services:
+  db:
+    image: postgres:latest
+    volumes: 
+      - postgresVolume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+  hmaraserver:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
+    ports:
+      - 8000:8000
+    volumes: 
+      - .:/src/app/
+    links: 
+      - db
+  hmaraserver2:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
+    ports:
+      - 8001:8000
+    volumes: 
+      - .:/src/app/
+    links: 
+      - db
+  hmaraserver3:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
+    ports:
+      - 8002:8000
+    volumes: 
+      - .:/src/app/
+    links: 
+      - db
