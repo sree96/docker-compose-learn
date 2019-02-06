@@ -14,8 +14,6 @@ services:
     build: .
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
-    ports:
-      - 8000:8000
     volumes: 
       - .:/src/app/
     links: 
@@ -24,8 +22,6 @@ services:
     build: .
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
-    ports:
-      - 8001:8000
     volumes: 
       - .:/src/app/
     links: 
@@ -34,9 +30,16 @@ services:
     build: .
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
-    ports:
-      - 8002:8000
     volumes: 
       - .:/src/app/
     links: 
       - db
+  mainserver:
+    build: .
+    ports:
+      - 9000:9000
+    volumes: 
+      - .:/src/app/
+    environment: 
+      - servers=["http://compose_hmaraserver_1:8000", "http://compose_hmaraserver2_1:8000", "http://compose_hmaraserver3_1:8000"]
+    command: ["nodemon", "/src/app/server.js"]

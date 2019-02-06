@@ -6,7 +6,7 @@ const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:pass
 const client = new pg.Client(connectionString);
 client.connect()
   .then(() => console.log('connected'))
-  .catch(e => console.error('connection error', e.stack))
+  .catch(e => console.error('connection error', e.stack));
 
 app.get('/', (req, res) => {
   client.query("select number from magicNumbers;", (err, result) => {
@@ -29,5 +29,4 @@ app.post('/save', (req, res) => {
 });
 
 app.listen(8000);
-
 app.on('error', () => client.end());
