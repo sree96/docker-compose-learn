@@ -14,6 +14,11 @@ app.get('/', (req, res) => {
   });
 })
 
+app.get('/health', (req, res) => {
+  res.status(200);
+  res.end();
+})
+
 app.post('/save', (req, res) => {
   let number;
   req.on('data', (data) => {

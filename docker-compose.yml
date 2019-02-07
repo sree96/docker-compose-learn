@@ -12,6 +12,7 @@ services:
       POSTGRES_PASSWORD: password
   hmaraserver:
     build: .
+    container_name: hamaraserver1
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
     volumes: 
@@ -20,6 +21,7 @@ services:
       - db
   hmaraserver2:
     build: .
+    container_name: hamaraserver2
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
     volumes: 
@@ -28,6 +30,7 @@ services:
       - db
   hmaraserver3:
     build: .
+    container_name: hamaraserver3
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
     volumes: 
@@ -41,5 +44,5 @@ services:
     volumes: 
       - .:/src/app/
     environment: 
-      - servers=["http://compose_hmaraserver_1:8000", "http://compose_hmaraserver2_1:8000", "http://compose_hmaraserver3_1:8000"]
+      - servers=["http://hamaraserver1:8000", "http://hamaraserver2:8000", "http://hamaraserver3:8000"]
     command: ["nodemon", "/src/app/server.js"]

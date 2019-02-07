@@ -1,38 +1,32 @@
 const express = require('express');
 const app = express();
 const http = require('http');
-const servers = JSON.parse(process.env.servers);
-let lastserverIndex = 0;
+const ServerHandler = require("./ServerHandler");
+const servers = new ServerHandler(JSON.parse(process.env.servers));
 
-const getHealthyServer = () => {
-  const server = servers[lastserverIndex];
-  ++lastserverIndex;
-  if (lastserverIndex >= servers.length) lastserverIndex = 0;
-  return server;
-};
+// const getServer = () => {
+//   const server = servers[lastserverIndex];
+//   ++lastserverIndex;
+//   if (lastserverIndex >= servers.length) lastserverIndex = 0;
+//   return server;
+// };
+
+// const getHealthyServer = () => {
+//   const server = getServer();
+//   http.get(`${server}/health`, (res) => {
+    
+//   });
+// }
+
 
 app.get('/', (req, response) => {
-  const server = getHealthyServer();
-  http.get(server, (res) => {
-    const { statusCode } = res;
-    const contentType = res.headers['content-type'];
+  servers.respond(response);
+  const server = servers.getHealthyServer();
+  makeRequest(server, response);
+});
 
-    let error;
-    if (statusCode !== 200) {
-      error = new Error('Request Failed.\n' +
-        `Status Code: ${statusCode}`);
-    } else if (!/^application\/json/.test(contentType)) {
-      error = new Error('Invalid content-type.\n' +
-        `Expected application/json but received ${contentType}`);
-    }
-    if (error) {
-      console.error(error.message);
-      // consume response data to free up memory
-      res.resume();
-      return;
-    }
-
-    res.setEncoding('utf8');
+const makeRequest = (url, response) => {
+  http.get(url, (res) => {
     let rawData = '';
     res.on('data', (chunk) => { rawData += chunk; });
     res.on('end', () => {
@@ -49,7 +43,7 @@ app.get('/', (req, response) => {
     response.send(e.message);
     console.error(`Got error: ${e.message}`);
   });
-}); 
+}
 
 
 app.listen(9000);
