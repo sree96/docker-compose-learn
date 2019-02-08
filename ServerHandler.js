@@ -1,37 +1,25 @@
 const http = require('http');
-const rp = require('request-promise');
 
 class ServerHandler {
   constructor(servers) {
     this.servers = servers;
     this.lastServerIndex = 0;
-    this.lasthealthyServer = "";
   }
 
-  updateHealthyServer() {
-    this.resetLasthealthyServer();
+  respond(response) {
     const server = this.getServer();
-    rp(`${server}/health`).then(res => {
-      if (res.statusCode === 200 ) {
+    http.get(`${server}/health`, (res) => {
+      if (res.statusCode === 200) {
+        makeGetRequest(server, response)
+      } else {
+        this.updateHealthyServer();
       }
-    }).catch( error => console.log(error));
+    });
   }
 
-  getHealthyServer(){
-    this.updateHealthyServer();
-    if (this.lasthealthyServer !== "") return this.lasthealthyServer;
-    return this.getHealthyServer();
+  addResponder(server) {
+    console.log(server , "================")
   }
-
-  resetLasthealthyServer(){
-    this.lasthealthyServer = "";
-  }
-
-  respond(req, response) {
-  this.getHealthyServer(response);
-  makeRequest(server, response);
-}
-
   getServer() {
     const server = this.servers[this.lastServerIndex];
     ++this.lastserverIndex;
@@ -40,7 +28,7 @@ class ServerHandler {
   };
 }
 
-const makeRequest = (url, response) => {
+const makeGetRequest = (url, response) => {
   http.get(url, (res) => {
     let rawData = '';
     res.on('data', (chunk) => { rawData += chunk; });

@@ -5,7 +5,7 @@ volumes:
 
 services:
   db:
-    image: postgres:latest
+    image: postgres:9.6.1
     volumes: 
       - postgresVolume:/var/lib/postgresql/data
     environment:
@@ -16,33 +16,31 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
     volumes: 
-      - .:/src/app/
-    links: 
-      - db
+      - ./app.js:/src/app/app.js
+
   hmaraserver2:
     build: .
     container_name: hamaraserver2
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
     volumes: 
-      - .:/src/app/
-    links: 
-      - db
+      - ./app.js:/src/app/app.js
+
   hmaraserver3:
     build: .
     container_name: hamaraserver3
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
     volumes: 
-      - .:/src/app/
-    links: 
-      - db
+      - ./app.js:/src/app/app.js
+      
   mainserver:
     build: .
     ports:
       - 9000:9000
     volumes: 
-      - .:/src/app/
+      - ./server.js:/src/app/server.js
+      - ./serverHandler.js:/src/app/serverHandler.js
     environment: 
       - servers=["http://hamaraserver1:8000", "http://hamaraserver2:8000", "http://hamaraserver3:8000"]
     command: ["nodemon", "/src/app/server.js"]
