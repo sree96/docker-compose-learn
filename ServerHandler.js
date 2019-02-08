@@ -12,23 +12,28 @@ class ServerHandler {
       if (res.statusCode === 200) {
         makeGetRequest(server, response)
       } else {
-        this.updateHealthyServer();
+        this.respond(response);
       }
+    }).on('error', (e) => {
+      this.respond(response);
+      console.error(`Got error: ${e.message}`);
     });
   }
 
+
   addResponder(server) {
-    console.log(server , "================")
+    console.log(server, "================")
   }
+
   getServer() {
-    const server = this.servers[this.lastServerIndex];
-    ++this.lastserverIndex;
-    if (this.lastserverIndex >= this.servers.length) this.lastserverIndex = 0;
+    const server = this.servers[this.lastServerIndex++];
+    if (this.lastServerIndex >= this.servers.length) this.lastServerIndex = 0;
     return server;
   };
 }
 
 const makeGetRequest = (url, response) => {
+  console.log("request for server", url)
   http.get(url, (res) => {
     let rawData = '';
     res.on('data', (chunk) => { rawData += chunk; });
