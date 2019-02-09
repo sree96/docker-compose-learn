@@ -8,7 +8,7 @@ client.connect()
   .then(() => console.log('connected'))
   .catch(e => console.error('connection error', e.stack));
 
-app.get('/', (req, res) => {
+app.get('/number', (req, res) => {
   client.query("select number from magicNumbers;", (err, result) => {
     res.send(result.rows.map((row) => row.number));
   });
@@ -20,7 +20,7 @@ app.get('/health', (req, res) => {
   res.end();
 })
 
-app.post('/save', (req, res) => {
+app.post('/number', (req, res) => {
   let number;
   req.on('data', (data) => {
     number = JSON.parse(data.toString()).number;
